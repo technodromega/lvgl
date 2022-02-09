@@ -1,14 +1,10 @@
 /*******************************************************************************
  *    INCLUDE SECTION
  ******************************************************************************/
-#include "ft6236.h"
-
-#include "FreeRTOS.h"
-#include "task.h"
+#include "lv_ft6236.h"
 
 #include <openthread/cli.h>
 #include "sl_ot_freertos_adaptation.h"
-#include "app_common.h"
 
 
 /*******************************************************************************

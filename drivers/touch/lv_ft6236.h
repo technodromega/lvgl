@@ -1,10 +1,10 @@
-#ifndef FT6236_H
-#define FT6236_H
+#ifndef LV_FT6236_H
+#define LV_FT6236_H
 
 /*********************************
  *        INCLUDE SECTION
  *********************************/
-#include "ft6236_driver.h"
+#include "ft6236.h"
 #include "lvgl.h"
 
 
@@ -24,4 +24,4 @@ FT6x36Error_t lv_ft6236_init();
   */
 void lv_ft6236_read(lv_indev_drv_t *drv, lv_indev_data_t *data);
 
-#endif /* FT6X06_H */
+#endif /* LV_FT6X06_H */

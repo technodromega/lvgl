@@ -1,18 +1,8 @@
 /*******************************************************************************
  *    INCLUDE SECTION
  ******************************************************************************/
-#include "st7789.h"
-#include "st7789_driver.h"
-
+#include "lv_st7789.h"
 #include <stdint.h>
-#include <stdbool.h>
-#include "FreeRTOS.h"
-#include "task.h"
-
-#include "sl_ot_freertos_adaptation.h"
-#include <openthread/cli.h>
-
-#include "display.h"
 
 
 /*******************************************************************************
@@ -36,7 +26,6 @@
 void lv_st7789_init(void)
 {
     st7789_init();
-    GPIO_PinOutSet(LCD_DISPLAY_CTRL_PORT, LCD_DISPLAY_CTRL_PIN);
 }
 
 /* The ST7789 display controller can drive up to 320*240 displays, when using a 240*240 or 240*135

@@ -1,9 +1,10 @@
-#ifndef ST7789_H
-#define ST7789_H
+#ifndef LV_ST7789_H
+#define LV_ST7789_H
 
 /*********************************
  *        INCLUDE SECTION
  *********************************/
+#include "st7789.h"
 #include "lvgl.h"
 
 
@@ -23,4 +24,4 @@ void lv_st7789_init(void);
   */
 void lv_st7789_flush(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map);
 
-#endif /* ST7789_H  */
+#endif /* LV_ST7789_H  */
