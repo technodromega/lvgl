@@ -12,6 +12,8 @@
 #include "lv_ll.h"
 #include "lv_gc.h"
 
+#include <stdio.h>
+
 /*********************
  *      DEFINES
  *********************/
@@ -141,7 +143,9 @@ LV_ATTRIBUTE_TIMER_HANDLER uint32_t lv_timer_handler(void)
 
     already_running = false; /*Release the mutex*/
 
-    TIMER_TRACE("finished (%d ms until the next timer call)", time_till_next);
+    char str_number[4]; /*Print 4-bytes number as string*/
+    snprintf(str_number, 16, "%ld", time_till_next);
+    TIMER_TRACE("finished (%s ms until the next timer call)", str_number);
     return time_till_next;
 }
 

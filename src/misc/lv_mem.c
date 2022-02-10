@@ -13,6 +13,8 @@
 #include "lv_assert.h"
 #include "lv_log.h"
 
+#include <stdio.h>
+
 #if LV_MEM_CUSTOM != 0
     #include LV_MEM_CUSTOM_INCLUDE
 #endif
@@ -263,7 +265,9 @@ void * lv_mem_buf_get(uint32_t size)
 {
     if(size == 0) return NULL;
 
-    MEM_TRACE("begin, getting %d bytes", size);
+    char str_number[4]; /*Print 4-bytes number as string*/
+    snprintf(str_number, 16, "%ld", size);
+    MEM_TRACE("begin, getting %s bytes", str_number);
 
     /*Try to find a free buffer with suitable size*/
     int8_t i_guess = -1;
