@@ -10,9 +10,9 @@
 /*******************************************************************************
  *    DEFINE MACRO SECTION
  ******************************************************************************/
-#define CONFIG_LV_FT6X36_SWAPXY      0
+#define CONFIG_LV_FT6X36_SWAPXY      1
 #define CONFIG_LV_FT6X36_INVERT_X    0
-#define CONFIG_LV_FT6X36_INVERT_Y    0
+#define CONFIG_LV_FT6X36_INVERT_Y    1
 
 
 /*******************************************************************************
