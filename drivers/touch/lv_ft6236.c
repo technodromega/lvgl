@@ -29,7 +29,7 @@ typedef struct
 /*******************************************************************************
  *    VARIABLE DEFINITION SECTION
  ******************************************************************************/
-static lv_ft6x36_touch_t touch_inputs = { -1, -1, LV_INDEV_STATE_REL };    // -1 coordinates to designate it was never touched
+static lv_ft6x36_touch_t touch_inputs = { 0, 0, LV_INDEV_STATE_REL }; // Set coordinates to 0 by default
 
 
 /*******************************************************************************
@@ -90,5 +90,5 @@ void lv_ft6236_read(lv_indev_drv_t *drv, lv_indev_data_t *data) {
     data->point.x = touch_inputs.last_x;
     data->point.y = touch_inputs.last_y;
     data->state = touch_inputs.current_state;
-    OT_API_CALL(otCliOutputFormat("(DEBUG) (%s): X = %u Y= %u\r\n", pcTaskGetName(NULL), data->point.x, data->point.y));
+    OT_API_CALL(otCliOutputFormat("(DEBUG) (%s): X = %u Y = %u\r\n", pcTaskGetName(NULL), data->point.x, data->point.y));
 }
