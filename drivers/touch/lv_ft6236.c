@@ -2,9 +2,8 @@
  *    INCLUDE SECTION
  ******************************************************************************/
 #include "lv_ft6236.h"
-
-#include <openthread/cli.h>
 #include "sl_ot_freertos_adaptation.h"
+#include <stdio.h>
 
 
 /*******************************************************************************
@@ -42,10 +41,10 @@ FT6x36Error_t lv_ft6236_init() {
         FT6x36Info_t *dev_info;
         dev_info = ft6236_get_device_info();
         if (dev_info != NULL) {
-            OT_API_CALL(otCliOutputFormat("(DEBUG) (%s): DEVICE ID:    0x%02x\r\n", pcTaskGetName(NULL), dev_info->device_id));
-            OT_API_CALL(otCliOutputFormat("(DEBUG) (%s): CHIP ID:      0x%02x\r\n", pcTaskGetName(NULL), dev_info->chip_id));
-            OT_API_CALL(otCliOutputFormat("(DEBUG) (%s): FIRMWARE ID:  0x%02x\r\n", pcTaskGetName(NULL), dev_info->firmware_id));
-            OT_API_CALL(otCliOutputFormat("(DEBUG) (%s): RELEASE CODE: 0x%02x\r\n", pcTaskGetName(NULL), dev_info->release_code));
+            printf("(DEBUG) (%s): DEVICE ID:    0x%02x\r\n", pcTaskGetName(NULL), dev_info->device_id);
+            printf("(DEBUG) (%s): CHIP ID:      0x%02x\r\n", pcTaskGetName(NULL), dev_info->chip_id);
+            printf("(DEBUG) (%s): FIRMWARE ID:  0x%02x\r\n", pcTaskGetName(NULL), dev_info->firmware_id);
+            printf("(DEBUG) (%s): RELEASE CODE: 0x%02x\r\n", pcTaskGetName(NULL), dev_info->release_code);
         }
     }
 
@@ -60,7 +59,7 @@ void lv_ft6236_read(lv_indev_drv_t *drv, lv_indev_data_t *data) {
 
         FT6x36Error_t ret = ft6236_i2c_read(FT6X36_TD_STAT_REG, &data_buf[0], 5);
         if (ret != FT6x36_NO_ERROR) {
-            OT_API_CALL(otCliOutputFormat(ANSI_COLOR_RED "(ERROR) (%s): Error talking to touch IC: %d" ANSI_COLOR_RESET "\r\n", pcTaskGetName(NULL), ret));
+            printf(ANSI_COLOR_RED "(ERROR) (%s): Error talking to touch IC: %d" ANSI_COLOR_RESET "\r\n", pcTaskGetName(NULL), ret);
         }
 
         uint8_t touch_pnt_cnt = data_buf[0]; // Number of detected touch points
@@ -93,6 +92,6 @@ void lv_ft6236_read(lv_indev_drv_t *drv, lv_indev_data_t *data) {
         data->point.x = touch_inputs.last_x;
         data->point.y = touch_inputs.last_y;
         data->state = touch_inputs.current_state;
-        OT_API_CALL(otCliOutputFormat("(DEBUG) (%s): X = %u Y = %u\r\n", pcTaskGetName(NULL), data->point.x, data->point.y));
+        printf("(DEBUG) (%s): X = %u Y = %u\r\n", pcTaskGetName(NULL), data->point.x, data->point.y);
     }
 }
