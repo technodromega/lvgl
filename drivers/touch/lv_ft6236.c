@@ -59,7 +59,7 @@ void lv_ft6236_read(lv_indev_drv_t *drv, lv_indev_data_t *data) {
 
         FT6x36Error_t ret = ft6236_i2c_read(FT6X36_TD_STAT_REG, &data_buf[0], 5);
         if (ret != FT6x36_NO_ERROR) {
-            printf(ANSI_COLOR_RED "(ERROR) (%s): Error talking to touch IC: %d" ANSI_COLOR_RESET "\r\n", pcTaskGetName(NULL), ret);
+            printf("(ERROR) (%s): Error talking to touch IC: %d \r\n", pcTaskGetName(NULL), ret);
         }
 
         uint8_t touch_pnt_cnt = data_buf[0]; // Number of detected touch points
