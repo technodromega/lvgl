@@ -77,6 +77,7 @@ lv_obj_t * lv_msgbox_create(lv_obj_t * parent, const char * title, const char * 
     lv_obj_class_init_obj(obj);
     if(obj == NULL) return NULL;
     lv_msgbox_t * mbox = (lv_msgbox_t *)obj;
+    lv_obj_set_style_bg_color(&(mbox->obj), lv_palette_lighten(LV_PALETTE_GREY, 1), 0);
 
     if(auto_parent) lv_obj_add_flag(obj, LV_MSGBOX_FLAG_AUTO_PARENT);
 
@@ -89,18 +90,21 @@ lv_obj_t * lv_msgbox_create(lv_obj_t * parent, const char * title, const char * 
         mbox->title = lv_label_create(obj);
         lv_label_set_text(mbox->title, has_title ? title : "");
         lv_label_set_long_mode(mbox->title, LV_LABEL_LONG_SCROLL_CIRCULAR);
+        lv_obj_set_style_text_font(mbox->title, &lv_font_montserrat_20, 0);
         if(add_close_btn) lv_obj_set_flex_grow(mbox->title, 1);
         else lv_obj_set_width(mbox->title, LV_PCT(100));
     }
 
     if(add_close_btn) {
         mbox->close_btn = lv_btn_create(obj);
+        lv_obj_set_style_bg_color(mbox->close_btn, lv_palette_darken(LV_PALETTE_GREY, 2), 0);
         lv_obj_set_ext_click_area(mbox->close_btn, LV_DPX(10));
         lv_obj_add_event_cb(mbox->close_btn, msgbox_close_click_event_cb, LV_EVENT_CLICKED, NULL);
         lv_obj_t * label = lv_label_create(mbox->close_btn);
         lv_label_set_text(label, LV_SYMBOL_CLOSE);
+        lv_obj_set_style_text_font(label, &lv_font_montserrat_12, 0);
         const lv_font_t * font = lv_obj_get_style_text_font(mbox->close_btn, LV_PART_MAIN);
-        lv_coord_t close_btn_size = lv_font_get_line_height(font) + LV_DPX(10);
+        lv_coord_t close_btn_size = lv_font_get_line_height(font) + LV_DPX(25);
         lv_obj_set_size(mbox->close_btn, close_btn_size, close_btn_size);
         lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
     }
@@ -112,6 +116,7 @@ lv_obj_t * lv_msgbox_create(lv_obj_t * parent, const char * title, const char * 
         mbox->text = lv_label_create(mbox->content);
         lv_label_set_text(mbox->text, txt);
         lv_label_set_long_mode(mbox->text, LV_LABEL_LONG_WRAP);
+        lv_obj_set_style_text_font(mbox->text, &lv_font_montserrat_12, 0);
         lv_obj_set_width(mbox->text, lv_pct(100));
     }
 
