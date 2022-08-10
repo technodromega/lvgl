@@ -2,67 +2,68 @@
  *    INCLUDE SECTION
  ******************************************************************************/
 #include "lv_st7789.h"
+
 #include <stdint.h>
 
 
 /*******************************************************************************
  *    DEFINE MACRO SECTION
  ******************************************************************************/
-#define CONFIG_LV_DISPLAY_ORIENTATION_PORTRAIT               1
-#define CONFIG_LV_DISPLAY_ORIENTATION_PORTRAIT_INVERTED      0
-#define CONFIG_LV_DISPLAY_ORIENTATION_LANDSCAPE              0
-#define CONFIG_LV_DISPLAY_ORIENTATION_LANDSCAPE_INVERTED     0
+#define LVGL_TFT_CONFIG_ORIENTATION_PORTRAIT               1
+#define LVGL_TFT_CONFIG_ORIENTATION_PORTRAIT_INVERTED      0
+#define LVGL_TFT_CONFIG_ORIENTATION_LANDSCAPE              0
+#define LVGL_TFT_CONFIG_ORIENTATION_LANDSCAPE_INVERTED     0
 
-#define CONFIG_LV_TFT_DISPLAY_OFFSETS                        0
-#if (CONFIG_LV_TFT_DISPLAY_OFFSETS)
-#define CONFIG_LV_TFT_DISPLAY_X_OFFSET                       0
-#define CONFIG_LV_TFT_DISPLAY_Y_OFFSET                       0
+#define LVGL_TFT_CONFIG_DISPLAY_OFFSETS                    0
+#if (LVGL_TFT_CONFIG_DISPLAY_OFFSETS)
+#define LVGL_TFT_CONFIG_DISPLAY_X_OFFSET                   0
+#define LVGL_TFT_CONFIG_DISPLAY_Y_OFFSET                   0
 #endif
 
 
 /*******************************************************************************
  *    FUNCTION DEFINITION SECTION
  ******************************************************************************/
-void lv_st7789_init(void)
+void LVGL_TftInit()
 {
-    st7789_init();
+    ST7789_Init();
 }
 
-/* The ST7789 display controller can drive up to 320*240 displays, when using a 240*240 or 240*135
- * displays there's a gap of 80px or 40/52/53px respectively. 52px or 53x offset depends on display orientation.
- * We need to edit the coordinates to take into account those gaps, this is not necessary in all orientations. */
-void lv_st7789_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_map)
+void LVGL_TftFlush(lv_disp_drv_t* drv, const lv_area_t* area, lv_color_t* colorMap)
 {
+    /* The ST7789 display controller can drive up to 320*240 displays, when using a 240*240 or 240*135
+     * displays there is a gap of 80px or 40/52/53px respectively. 52px or 53x offset depends on display orientation.
+     * We need to edit the coordinates to take into account those gaps, this is not necessary in all orientations. */
     uint16_t offsetx1 = area->x1;
     uint16_t offsetx2 = area->x2;
     uint16_t offsety1 = area->y1;
     uint16_t offsety2 = area->y2;
 
-#if (CONFIG_LV_TFT_DISPLAY_OFFSETS)
-    offsetx1 += CONFIG_LV_TFT_DISPLAY_X_OFFSET;
-    offsetx2 += CONFIG_LV_TFT_DISPLAY_X_OFFSET;
-    offsety1 += CONFIG_LV_TFT_DISPLAY_Y_OFFSET;
-    offsety2 += CONFIG_LV_TFT_DISPLAY_Y_OFFSET;
+#if (LVGL_TFT_CONFIG_DISPLAY_OFFSETS)
+    offsetx1 += LVGL_TFT_CONFIG_DISPLAY_X_OFFSET;
+    offsetx2 += LVGL_TFT_CONFIG_DISPLAY_X_OFFSET;
+    offsety1 += LVGL_TFT_CONFIG_DISPLAY_Y_OFFSET;
+    offsety2 += LVGL_TFT_CONFIG_DISPLAY_Y_OFFSET;
 
 #elif (LV_HOR_RES_MAX == 240) && (LV_VER_RES_MAX == 240)
-    #if (CONFIG_LV_DISPLAY_ORIENTATION_PORTRAIT)
+    #if (LVGL_TFT_CONFIG_ORIENTATION_PORTRAIT)
         offsetx1 += 80;
         offsetx2 += 80;
-    #elif (CONFIG_LV_DISPLAY_ORIENTATION_LANDSCAPE_INVERTED)
+    #elif (LVGL_TFT_CONFIG_ORIENTATION_LANDSCAPE_INVERTED)
         offsety1 += 80;
         offsety2 += 80;
     #endif
 #elif (LV_HOR_RES_MAX == 240) && (LV_VER_RES_MAX == 135)
-    #if (CONFIG_LV_DISPLAY_ORIENTATION_PORTRAIT) || \
-        (CONFIG_LV_DISPLAY_ORIENTATION_PORTRAIT_INVERTED)
+    #if (LVGL_TFT_CONFIG_ORIENTATION_PORTRAIT) || \
+        (LVGL_TFT_CONFIG_ORIENTATION_PORTRAIT_INVERTED)
         offsetx1 += 40;
         offsetx2 += 40;
         offsety1 += 53;
         offsety2 += 53;
     #endif
 #elif (LV_HOR_RES_MAX == 135) && (LV_VER_RES_MAX == 240)
-    #if (CONFIG_LV_DISPLAY_ORIENTATION_LANDSCAPE) || \
-        (CONFIG_LV_DISPLAY_ORIENTATION_LANDSCAPE_INVERTED)
+    #if (LVGL_TFT_CONFIG_ORIENTATION_LANDSCAPE) || \
+        (LVGL_TFT_CONFIG_ORIENTATION_LANDSCAPE_INVERTED)
         offsetx1 += 52;
         offsetx2 += 52;
         offsety1 += 40;
@@ -71,28 +72,28 @@ void lv_st7789_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * c
 #endif
 
     /*Column addresses*/
-    st7789_writeCommand(ST7789_CASET);
-    st7789_writeData((offsetx1 >> 8) & 0xFF);
-    st7789_writeData(offsetx1 & 0xFF);
-    st7789_writeData((offsetx2 >> 8) & 0xFF);
-    st7789_writeData(offsetx2 & 0xFF);
+    ST7789_SendCommand(ST7789_CASET);
+    ST7789_SendData((offsetx1 >> 8) & 0xFF);
+    ST7789_SendData(offsetx1 & 0xFF);
+    ST7789_SendData((offsetx2 >> 8) & 0xFF);
+    ST7789_SendData(offsetx2 & 0xFF);
 
     /*Page addresses*/
-    st7789_writeCommand(ST7789_RASET);
-    st7789_writeData((offsety1 >> 8) & 0xFF);
-    st7789_writeData(offsety1 & 0xFF);
-    st7789_writeData((offsety2 >> 8) & 0xFF);
-    st7789_writeData(offsety2 & 0xFF);
+    ST7789_SendCommand(ST7789_RASET);
+    ST7789_SendData((offsety1 >> 8) & 0xFF);
+    ST7789_SendData(offsety1 & 0xFF);
+    ST7789_SendData((offsety2 >> 8) & 0xFF);
+    ST7789_SendData(offsety2 & 0xFF);
 
     /*Memory write*/
-    st7789_writeCommand(ST7789_RAMWR);
+    ST7789_SendCommand(ST7789_RAMWR);
 
     int16_t size = (int16_t)lv_area_get_width(area) * (int16_t)lv_area_get_height(area);
 
-    for (int i=0; i<size; i++) {
-        uint16_t* color_p = (uint16_t*)(color_map + i);
-        uint16_t color = *color_p;
-        st7789_writeData(color);
+    for (int i = 0; i < size; i++) {
+        uint16_t* pColor = (uint16_t*)(colorMap + i);
+        uint16_t color = *pColor;
+        ST7789_SendData(color);
     }
 
     /* IMPORTANT!!!
