@@ -5,7 +5,8 @@
 
 #include <stdio.h>
 
-#include "sl_ot_freertos_adaptation.h"
+#include <FreeRTOS.h>
+#include "task.h"
 
 
 /*******************************************************************************
