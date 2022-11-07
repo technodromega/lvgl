@@ -1,0 +1,15 @@
+declare_args() {
+  # Use a different target
+  lvgl_target = ""
+}
+
+if (lvgl_target != "") {
+  group("lvgl") {
+    public_deps = [ lvgl_target ]
+  }
+} else {
+  import("lvgl.gni")
+
+  lvgl_target("lvgl") {
+  }
+}
