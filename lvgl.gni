@@ -109,6 +109,7 @@ template("lvgl_target") {
     "${lvgl_root}/src/extra/libs/qrcode/lv_qrcode.c",
     "${lvgl_root}/src/extra/libs/qrcode/qrcodegen.c",
     "${lvgl_root}/src/font/lv_font.c",
+    "${lvgl_root}/src/font/lv_font_montserrat_8.c",
     "${lvgl_root}/src/font/lv_font_montserrat_10.c",
     "${lvgl_root}/src/font/lv_font_montserrat_12.c",
     "${lvgl_root}/src/font/lv_font_montserrat_16.c",
