@@ -2,6 +2,7 @@
  *    INCLUDE SECTION
  ******************************************************************************/
 #include "lv_ft6236.h"
+#include "ft6236_calibration.h"
 
 #include <stdio.h>
 
@@ -15,6 +16,12 @@
 #define LVGL_TOUCH_CONFIG_SWAPXY      1
 #define LVGL_TOUCH_CONFIG_INVERT_X    0
 #define LVGL_TOUCH_CONFIG_INVERT_Y    1
+
+#if FT6236_CALIBRATION_REQUIRED == 1
+#define LVGL_TOUCH_CALIB_REGION       2 * LV_VER_RES / 3
+#define LVGL_TOUCH_X_OFFSET           0
+#define LVGL_TOUCH_Y_OFFSET           30
+#endif
 
 
 /*******************************************************************************
@@ -93,8 +100,17 @@ void LVGL_TouchRead(lv_indev_drv_t *drv, lv_indev_data_t *data)
 #if LVGL_TOUCH_CONFIG_INVERT_Y
         lvgl_touchInputs.lastY = LV_VER_RES - lvgl_touchInputs.lastY;
 #endif
+
+#if FT6236_CALIBRATION_REQUIRED == 1
+        if (lvgl_touchInputs.lastY >= LVGL_TOUCH_CALIB_REGION) {
+            lvgl_touchInputs.lastX = lvgl_touchInputs.lastX - LVGL_TOUCH_X_OFFSET;
+            lvgl_touchInputs.lastY = lvgl_touchInputs.lastY - LVGL_TOUCH_Y_OFFSET;
+        }
+#endif
+
         data->point.x = lvgl_touchInputs.lastX;
         data->point.y = lvgl_touchInputs.lastY;
+
         data->state = lvgl_touchInputs.currentState;
         printf("(DEBUG) (%s): X = %u Y = %u\r\n", pcTaskGetName(NULL), data->point.x, data->point.y);
     }
