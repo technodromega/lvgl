@@ -8,6 +8,8 @@
 
 #include <FreeRTOS.h>
 #include "task.h"
+#include "sl_sleeptimer.h"
+#include "../../../examples/gcp-coaps-demo/efr32/src/display/interface/display.h"
 
 
 /*******************************************************************************
@@ -63,55 +65,74 @@ FT6236Error_t LVGL_TouchInit()
 
 void LVGL_TouchRead(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
+    GuiBacklightState_t state;
+    uint8_t timeout = GUI_TIMEOUT_DEFAULT;
     /* Read coordinates only if display is touched */
     if (FT6236_IsTouched()) {
-        /* Display is touched, read coordinates */
-        uint8_t dataBuffer[5] = {0, 0, 0, 0, 0}; // 1 byte status, 2 bytes X, 2 bytes Y
+        if (GUI_BacklightGetState(&state)) {
+            GUI_GetTimeout(&timeout);
+            GUI_DisplayTimerRestart(timeout*1000);
+            // if (GUI_GetTimeout(&timeout)) {
+            //     GUI_DisplayTimerRestart(timeout*1000);
+            // }
+            // else {
+            //     GUI_DisplayTimerRestart(GUI_TIMEOUT_DEFAULT*1000);
+            // }
 
-        FT6236Error_t ret = FT6236_Read(FT6236_TD_STAT_REG, &dataBuffer[0], 5);
-        if (ret != FT6236_NO_ERROR) {
-            printf("(ERROR) (%s): Error talking to touch IC: %d \r\n", pcTaskGetName(NULL), ret);
-        }
-
-        uint8_t touchPntCnt = dataBuffer[0]; // Number of detected touch points
-
-        if (ret != FT6236_NO_ERROR || touchPntCnt != 1) { // Ignore no touch & multi touch
-            if ( lvgl_touchInputs.currentState != LV_INDEV_STATE_REL) {
-                lvgl_touchInputs.currentState = LV_INDEV_STATE_REL;
+            if (state == GUI_BACKLIGHT_OFF) {
+                GUI_BacklightOn();
+                sl_sleeptimer_delay_millisecond(100);   // delay time for better user experience
             }
-            data->point.x = lvgl_touchInputs.lastX;
-            data->point.y = lvgl_touchInputs.lastY;
-            data->state = lvgl_touchInputs.currentState;
-            return;
-        }
+            else {
+                /* Display is touched, read coordinates */
+                uint8_t dataBuffer[5] = {0, 0, 0, 0, 0}; // 1 byte status, 2 bytes X, 2 bytes Y
 
-        lvgl_touchInputs.currentState = LV_INDEV_STATE_PR;
-        lvgl_touchInputs.lastX = ((dataBuffer[1] & FT6236_MSB_MASK) << 8) | (dataBuffer[2] & FT6236_LSB_MASK);
-        lvgl_touchInputs.lastY = ((dataBuffer[3] & FT6236_MSB_MASK) << 8) | (dataBuffer[4] & FT6236_LSB_MASK);
+                FT6236Error_t ret = FT6236_Read(FT6236_TD_STAT_REG, &dataBuffer[0], 5);
+                if (ret != FT6236_NO_ERROR) {
+                    printf("(ERROR) (%s): Error talking to touch IC: %d \r\n", pcTaskGetName(NULL), ret);
+                }
+
+                uint8_t touchPntCnt = dataBuffer[0]; // Number of detected touch points
+
+                if (ret != FT6236_NO_ERROR || touchPntCnt != 1) { // Ignore no touch & multi touch
+                    if ( lvgl_touchInputs.currentState != LV_INDEV_STATE_REL) {
+                        lvgl_touchInputs.currentState = LV_INDEV_STATE_REL;
+                    }
+                    data->point.x = lvgl_touchInputs.lastX;
+                    data->point.y = lvgl_touchInputs.lastY;
+                    data->state = lvgl_touchInputs.currentState;
+                    return;
+                }
+
+                lvgl_touchInputs.currentState = LV_INDEV_STATE_PR;
+                lvgl_touchInputs.lastX = ((dataBuffer[1] & FT6236_MSB_MASK) << 8) | (dataBuffer[2] & FT6236_LSB_MASK);
+                lvgl_touchInputs.lastY = ((dataBuffer[3] & FT6236_MSB_MASK) << 8) | (dataBuffer[4] & FT6236_LSB_MASK);
 
 #if LVGL_TOUCH_CONFIG_SWAPXY
-        int16_t swapBuffer = lvgl_touchInputs.lastX;
-        lvgl_touchInputs.lastX = lvgl_touchInputs.lastY;
-        lvgl_touchInputs.lastY = swapBuffer;
+                int16_t swapBuffer = lvgl_touchInputs.lastX;
+                lvgl_touchInputs.lastX = lvgl_touchInputs.lastY;
+                lvgl_touchInputs.lastY = swapBuffer;
 #endif
 #if LVGL_TOUCH_CONFIG_INVERT_X
-        lvgl_touchInputs.lastX =  LV_HOR_RES - lvgl_touchInputs.lastX;
+                lvgl_touchInputs.lastX =  LV_HOR_RES - lvgl_touchInputs.lastX;
 #endif
 #if LVGL_TOUCH_CONFIG_INVERT_Y
-        lvgl_touchInputs.lastY = LV_VER_RES - lvgl_touchInputs.lastY;
+                lvgl_touchInputs.lastY = LV_VER_RES - lvgl_touchInputs.lastY;
 #endif
 
 #if FT6236_CALIBRATION_REQUIRED == 1
-        if (lvgl_touchInputs.lastY >= LVGL_TOUCH_CALIB_REGION) {
-            lvgl_touchInputs.lastX = lvgl_touchInputs.lastX - LVGL_TOUCH_X_OFFSET;
-            lvgl_touchInputs.lastY = lvgl_touchInputs.lastY - LVGL_TOUCH_Y_OFFSET;
-        }
+                if (lvgl_touchInputs.lastY >= LVGL_TOUCH_CALIB_REGION) {
+                    lvgl_touchInputs.lastX = lvgl_touchInputs.lastX - LVGL_TOUCH_X_OFFSET;
+                    lvgl_touchInputs.lastY = lvgl_touchInputs.lastY - LVGL_TOUCH_Y_OFFSET;
+                }
 #endif
 
-        data->point.x = lvgl_touchInputs.lastX;
-        data->point.y = lvgl_touchInputs.lastY;
+                data->point.x = lvgl_touchInputs.lastX;
+                data->point.y = lvgl_touchInputs.lastY;
 
-        data->state = lvgl_touchInputs.currentState;
-        printf("(DEBUG) (%s): X = %u Y = %u\r\n", pcTaskGetName(NULL), data->point.x, data->point.y);
+                data->state = lvgl_touchInputs.currentState;
+                printf("(DEBUG) (%s): X = %u Y = %u\r\n", pcTaskGetName(NULL), data->point.x, data->point.y);
+            }
+        }
     }
 }
