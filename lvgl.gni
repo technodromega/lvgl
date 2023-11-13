@@ -5,8 +5,6 @@ template("lvgl_target") {
 
   config("${lvgl_target_name}_config") {
     include_dirs = [
-        "${lvgl_root}/drivers/tft",             
-        "${lvgl_root}/drivers/touch",               
         "${lvgl_root}/src",                         
         "${lvgl_root}/src/core",                    
         "${lvgl_root}/src/draw",                    
@@ -65,8 +63,6 @@ template("lvgl_target") {
     }
 
     sources += [
-        "${lvgl_root}/drivers/tft/lv_st7789.c",
-    "${lvgl_root}/drivers/touch/lv_ft6236.c",
     "${lvgl_root}/src/core/lv_disp.c",
     "${lvgl_root}/src/core/lv_group.c",
     "${lvgl_root}/src/core/lv_indev.c",
